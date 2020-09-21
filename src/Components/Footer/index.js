@@ -6,7 +6,7 @@ function Footer() {
     return (
         <div>
              <Typography variant="body2" color="textSecondary" align="center">
-      {'Made with ❤️ by srotti. Copyright © '}
+      {'Made with ❤️ by isuchit. Copyright © '}
       <Link color="inherit" href="#">
         Your Website
       </Link>{' '}
