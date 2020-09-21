@@ -36,6 +36,10 @@ import VideoLabelIcon from '@material-ui/icons/VideoLabel';
 
 import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 
+//Login
+import { useStateValue } from '../../StateProvider'
+import { auth } from '../../firebase'
+
 const drawerWidth = 240;
 
 const useStyles = makeStyles((theme) => ({
@@ -109,6 +113,9 @@ const useStyles = makeStyles((theme) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
   },
+  signedInUser: {
+    padding: theme.spacing(1),
+  },
 }));
 
 function Header() {
@@ -118,6 +125,16 @@ function Header() {
   const [menuOpen, setMenuOpen] = React.useState(false);
   const anchorRef = React.useRef(null);
 
+  //Login
+  const [{ user }] = useStateValue()
+
+  const handleAuthentication = () => {
+    if (user) {
+      auth.signOut();
+    }
+  }
+
+  //Profile & Logout Menu
   const handleToggle = () => {
     setMenuOpen((prevOpen) => !prevOpen);
   };
@@ -126,7 +143,6 @@ function Header() {
     if (anchorRef.current && anchorRef.current.contains(event.target)) {
       return;
     }
-
     setMenuOpen(false);
   };
 
@@ -145,6 +161,7 @@ function Header() {
     }
   }
 
+  //Drawer
   const handleDrawerOpen = () => {
     setOpen(true);
   };
@@ -174,34 +191,43 @@ function Header() {
             React Material UI - Skeleton
             </Typography>
           {/* <Link to="/login"  className={classes.linkStyle}> */}
-          <AccountCircleIcon 
-          ref={anchorRef}
-          aria-controls={menuOpen ? 'menu-list-grow' : undefined}
-          aria-haspopup="true"
-          onClick={handleToggle}
-          />
-          
-          <Popper open={menuOpen} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
-            {({ TransitionProps, placement }) => (
-              <Grow
-                {...TransitionProps}
-                style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-              >
-                <Paper>
-                  <ClickAwayListener onClickAway={handleClose}>
-                    <MenuList autoFocusItem={menuOpen} id="menu-list-grow" onKeyDown={handleListKeyDown}>
-                      <MenuItem onClick={handleClose}>Profile</MenuItem>
-                      <MenuItem onClick={handleClose}>My account</MenuItem>
-                      <MenuItem onClick={handleClose}>Logout</MenuItem>
-                    </MenuList>
-                  </ClickAwayListener>
-                </Paper>
-              </Grow>
+
+          <div className={classes.signedInUser}>Hello, {user ? user.email.split("@")[0] : 'Guest'}</div>
+          {user ? (
+            <div className={classes.signedInUser}>
+              <AccountCircleIcon
+                ref={anchorRef}
+                aria-controls={menuOpen ? 'menu-list-grow' : undefined}
+                aria-haspopup="true"
+                onClick={handleToggle}
+              />
+              <Popper open={menuOpen} anchorEl={anchorRef.current} role={undefined} transition disablePortal>
+                {({ TransitionProps, placement }) => (
+                  <Grow
+                    {...TransitionProps}
+                    style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+                  >
+                    <Paper>
+                      <ClickAwayListener onClickAway={handleClose}>
+                        <MenuList autoFocusItem={menuOpen} id="menu-list-grow" onKeyDown={handleListKeyDown}>
+                          <MenuItem onClick={handleClose}>Profile</MenuItem>
+                          <MenuItem onClick={handleClose}>My account</MenuItem>
+                          <MenuItem onClick={handleAuthentication}>Logout</MenuItem>
+                        </MenuList>
+                      </ClickAwayListener>
+                    </Paper>
+                  </Grow>
+                )}
+              </Popper>
+            </div>
+          ) : (
+              <div>
+                <Link to="/login" className={classes.linkStyle}>
+                  <Button color="inherit">Login</Button>
+                </Link>
+              </div>
             )}
-          </Popper>
-          <Link to="/login"  className={classes.linkStyle}>
-            <Button color="inherit">Login</Button>
-          </Link>
+
         </Toolbar>
       </AppBar>
 

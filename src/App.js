@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Switch, Route } from 'react-router-dom'
 
 import Header from './Components/Header'
@@ -7,8 +7,29 @@ import Home from './Views/Home'
 import Login from './Views/Login'
 import Screen1 from './Views/Screen1'
 import Screen2 from './Views/Screen2'
+import { auth } from './firebase'
+import { useStateValue } from './StateProvider';
 
 export default function App() {
+
+  const [{ }, dispatch] = useStateValue();
+
+  useEffect(() => {
+    auth.onAuthStateChanged(authUser => {
+      if (authUser) {
+        dispatch({
+          type: 'SET_USER',
+          user: authUser
+        })
+      } else {
+        dispatch({
+          type: 'SET_USER',
+          user: null
+        })
+      }
+    })
+  }, [])
+  
   return (
     <Router>
       <div className="app">

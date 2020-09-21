@@ -12,6 +12,8 @@
     "@material-ui/core": "latest",
     "@material-ui/icons": "^4.9.1",
     "clsx": "latest",
+    "firebase": "^7.21.0",
+    "firebase-tools": "^8.10.0",
     "react": "latest",
     "react-dom": "latest",
     "react-router-dom": "^5.2.0",

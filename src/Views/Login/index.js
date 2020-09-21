@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Paper, Grid, TextField, Button, FormControlLabel, Checkbox, Container } from '@material-ui/core';
 import { Person, Fingerprint } from '@material-ui/icons'
 import { makeStyles } from '@material-ui/core/styles';
 import { useHistory } from 'react-router-dom'
+import { auth } from '../../firebase'
 
 const useStyles = makeStyles((theme) => ({
     margin: {
@@ -19,11 +20,27 @@ const useStyles = makeStyles((theme) => ({
 
 function Login() {
     const classes = useStyles();
+
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
     const history = useHistory();
 
     const signIn = e => {
-        e.preventDefault();
-        history.push('/')
+        auth.signInWithEmailAndPassword(email, password).then((auth) => {
+            history.push('/')
+        })
+            .catch(error => alert(error.message))
+    }
+
+    const signUp = e => {
+        auth
+            .createUserWithEmailAndPassword(email, password)
+            .then((auth) => {
+                if (auth) {
+                    history.push('/')
+                }
+            })
+            .catch(error => alert(error.message))
     }
 
     return (
@@ -36,7 +53,7 @@ function Login() {
                     <Person />
                 </Grid>
                 <Grid item md={true} sm={true} xs={true}>
-                    <TextField id="username" label="Username" type="email" fullWidth autoFocus required />
+                    <TextField id="email" value={email} label="Email" type="email" onChange={e => setEmail(e.target.value)} fullWidth autoFocus required />
                 </Grid>
             </Grid>
             <Grid container spacing={8} alignItems="flex-end">
@@ -44,7 +61,7 @@ function Login() {
                     <Fingerprint />
                 </Grid>
                 <Grid item md={true} sm={true} xs={true}>
-                    <TextField id="password" label="Password" type="password" fullWidth required />
+                    <TextField id="password" value={password} label="Password" type="password" onChange={e => setPassword(e.target.value)} fullWidth required />
                 </Grid>
             </Grid>
             <Grid container alignItems="center" justify="space-between">
@@ -59,8 +76,13 @@ function Login() {
                     <Button disableFocusRipple disableRipple style={{ textTransform: "none" }} variant="text" color="primary">Forgot password ?</Button>
                 </Grid>
             </Grid>
-            <Grid container justify="center" style={{ marginTop: '10px' }}>
+            <Grid container justify="center" spacing={4} style={{ marginTop: '10px' }}>
+            <Grid item>
                 <Button onClick={signIn} variant="outlined" color="primary" style={{ textTransform: "none" }}>Login</Button>
+                </Grid>
+                <Grid item>
+                <Button onClick={signUp} variant="outlined" color="primary" style={{ textTransform: "none" }}>Sign Up</Button>
+                </Grid>
             </Grid>
         </div>
     </Paper>
